@@ -2,6 +2,9 @@
   "name": "sensors",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": "<=16.0.0"
+  },
   "dependencies": {
     "@apollo/client": "^3.5.9",
     "@fortawesome/fontawesome-free": "^6.1.1",
