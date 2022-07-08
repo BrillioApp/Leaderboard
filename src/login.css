@@ -1,0 +1,13 @@
+* {
+  background-color: #1a003b;
+}
+.login {
+  margin: auto;
+  margin-top: 80px;
+  width: 300px;
+}
+.error {
+  padding: 5px 0px;
+  font-size: 12px;
+  color: red;
+}
