@@ -3,7 +3,7 @@ import { Table } from "react-bootstrap";
 import Card from "react-bootstrap/Card";
 import Swal from "sweetalert2";
 import Spinner from "react-bootstrap/Spinner";
-import { getEvents, deleteEvent } from "services/Event";
+import { getActivities, deleteActivity } from "services/activity";
 import { Popup } from "components/common/popUp/Popup";
 import editIcon from "assets/images/edit_icon.svg";
 import trashIcon from "assets/images/trash_icon.svg";
@@ -12,7 +12,11 @@ export const Events = () => {
   const [events, setEvents] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [action, setAction] = useState("");
-  const [eventData, setEventData] = useState();
+  const [eventData, setEventData] = useState({
+    id: "",
+    name: "",
+    points: "",
+  });
   const [showLoader, setLoader] = useState(false);
 
   const swalWithBootstrapButtons = Swal.mixin({
@@ -64,7 +68,7 @@ export const Events = () => {
       .then(async (result) => {
         if (result.isConfirmed) {
           try {
-            let actionResponse = await deleteEvent(eventData);
+            let actionResponse = await deleteActivity(eventData);
             setEvents(events.filter((event) => event.id !== eventData.id));
             swalWithBootstrapButtons.fire({
               title: "Deleted!",
@@ -79,7 +83,7 @@ export const Events = () => {
         }
       });
     try {
-      let actionResponse = await deleteEvent(eventData);
+      let actionResponse = await deleteActivity(eventData);
       // updateTab(action, actionResponse);
     } catch (error) {
       console.log(error);
@@ -90,7 +94,7 @@ export const Events = () => {
     try {
       const fetchEvents = async () => {
         setLoader(true);
-        let events = await getEvents();
+        let events = await getActivities();
         setEvents(events);
         setLoader(false);
       };
@@ -111,20 +115,12 @@ export const Events = () => {
             </Spinner>
           ) : (
             <>
-              <button
-                className="btn btn-outline-primary"
-                style={{ float: "right", marginBottom: "10px" }}
-                onClick={() => toggleShowModal("Activity")}
-              >
-                Add New Activity
-              </button>
               <Table striped borderless hover variant="dark">
                 <thead>
                   <tr>
                     <th>#</th>
                     <th>Event</th>
-                    <th>Organizer</th>
-                    <th>Date</th>
+                    <th>Points</th>
                     <th>Action</th>
                   </tr>
                 </thead>
@@ -133,9 +129,9 @@ export const Events = () => {
                     return (
                       <tr key={index}>
                         <td>{index + 1}</td>
-                        <td>{event.activityId.name}</td>
-                        <td>{event.organizer}</td>
-                        <td>{getDate(event.date)}</td>
+                        <td>{event.name}</td>
+                        <td>{event.points}</td>
+
                         <td>
                           <div
                             style={{
@@ -172,7 +168,7 @@ export const Events = () => {
                     className="btn btn-outline-primary mx-2"
                     onClick={() => toggleShowModal("Add")}
                   >
-                    Add Event
+                    Add Activity
                   </button>
                 </div>
               </div>

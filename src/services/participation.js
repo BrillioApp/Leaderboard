@@ -105,14 +105,14 @@ export const removeParticipant = async (id) => {
 
 // create partcipation
 
-export const createParticipation = async (participantId, eventId, rank) => {
-  let position = parseInt(rank);
-  console.log(typeof position);
+export const createParticipation = async (participantId, eventId, points) => {
+  let pointsval = parseInt(points);
+
   return client
     .mutate({
       mutation: gql`
   mutation{
-    createParticipation(participantId:"${participantId}",eventId:"${eventId}",rank:${position}){
+    createParticipation(participantId:"${participantId}",activityId:"${eventId}",points:${pointsval}){
       id
       }
     }
@@ -130,9 +130,9 @@ export const getPartcipationsList = (username, password) => {
         query {
           getAllParticipations {
             id
-            eventId
+            activityId
             participantId
-            rank
+            points
           }
         }
       `,
@@ -149,9 +149,9 @@ export const getPartcipation = (partcipantId) => {
         query {
           getParticipations(id:"${partcipantId}") {
             id
-            eventId
+            activityId
             participantId
-            rank
+            points
           }
         }
       `,
@@ -161,13 +161,13 @@ export const getPartcipation = (partcipantId) => {
     });
 };
 
-export const updateParticipationList = (id, participantId, eventId, rank) => {
-  let position = parseInt(rank);
+export const updateParticipationList = (id, participantId, eventId, points) => {
+  let pointVal = parseInt(points);
   return client
     .mutate({
       mutation: gql`
   mutation{
-    updateParticipation(id:"${id}",participantId:"${participantId}",eventId:"${eventId}",rank:${position}){
+    updateParticipation(id:"${id}",participantId:"${participantId}",activityId:"${eventId}",points:${pointVal}){
         id,
       
       }
@@ -203,12 +203,12 @@ export const getParticipantPoints = async () => {
         getPoints {
           name
           totalPoints
-          event {
-            rank
+          activity {
             points
-            eventId
             activityName
+            __typename
           }
+          __typename
         }
       }
     `,

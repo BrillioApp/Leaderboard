@@ -8,10 +8,7 @@ export const getActivities = async () => {
         getActivities {
           id
           name
-          ranks {
-            position
-            points
-          }
+          points
         }
       }
     `,
@@ -21,27 +18,55 @@ export const getActivities = async () => {
 
 export const createActivity = async (data) => {
   let name = data.name;
-  let rankList = data.ranks;
+  let points = parseInt(data.points);
   return client
     .mutate({
       mutation: gql`
-        mutation ($name: String!, $ranks: [RankInput]!) {
-          createActivity(name: $name, ranks: $ranks) {
+        mutation ($name: String!, $points: Int!) {
+          createActivity(name: $name, points: $points) {
             id
             name
-            ranks {
-              position
-              points
-            }
+            points
           }
         }
       `,
       variables: {
         name: name,
-        ranks: rankList,
+        points: points,
       },
     })
     .then((res) => {
       return res.data.createActivity;
     });
+};
+
+export const updateActivity = async ({ id, name, points }) => {
+  let pointsVal = parseInt(points);
+  console.log(typeof pointsVal);
+  const res = await client.mutate({
+    mutation: gql`
+      mutation{
+        updateActivity(id:"${id}", name:"${name}", points: ${pointsVal}){
+         id
+         name
+         points
+        }
+      }
+    `,
+  });
+  return res.data.updateActivity;
+};
+
+export const deleteActivity = async ({ id }) => {
+  const res = await client.mutate({
+    mutation: gql`
+    mutation{
+      deleteActivity(id:"${id}"){
+        id
+       
+      }
+    }
+    `,
+  });
+  return res.data.deleteActivity;
 };

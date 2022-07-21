@@ -38,6 +38,7 @@ export const ParticipantList = () => {
   const handleShow = () => {
     setData(undefined);
     setShow(true);
+    setParticipationData([]);
   };
   const editParticipant = async (data) => {
     try {
@@ -127,8 +128,8 @@ export const ParticipantList = () => {
                 <tr>
                   <th>#</th>
                   <th>Username</th>
+                  <th>Employee Id</th>
                   <th>Department</th>
-                  <th>Rank</th>
                   <th>Action</th>
                 </tr>
               </thead>
@@ -140,8 +141,8 @@ export const ParticipantList = () => {
                       <td>
                         {participant.firstname + " " + participant.lastname}
                       </td>
+                      <td>{participant.employeeId}</td>
                       <td>{participant.department}</td>
-                      <td>{index + 3}</td>
                       <td>
                         <div
                           style={{

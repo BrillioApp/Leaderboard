@@ -40,7 +40,7 @@ const Home = ({ newData, event, user, setUser, table }) => {
     let tabList = isAdmin
       ? [
           { path: "/", name: "Leaderboard" },
-          { path: "/eventdetails", name: "Events" },
+          { path: "/eventdetails", name: "Activities" },
           { path: "/participantdetails", name: "Participants" },
         ]
       : [];
@@ -107,12 +107,10 @@ const Home = ({ newData, event, user, setUser, table }) => {
 
   return (
     <div className="App center-div">
-      {!isLoggedInUser && (
-        <div>
-          <h1 className="heading">Leaderboard</h1>
-          {/* <Leaderboard /> */}
-        </div>
-      )}
+      <div>
+        <h1 className="heading">Leaderboard</h1>
+        {/* <Leaderboard /> */}
+      </div>
 
       {isLoggedInUser && (
         <div className="row">

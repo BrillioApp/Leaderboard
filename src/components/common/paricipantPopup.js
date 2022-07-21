@@ -11,7 +11,6 @@ import {
   getPartcipation,
 } from "services/participation";
 import { getActivities } from "services/activity";
-import { getEvents, deleteEvent } from "services/Event";
 import trashIcon from "assets/images/trash_icon.svg";
 
 const ParticipantPopup = ({
@@ -32,10 +31,8 @@ const ParticipantPopup = ({
     phone: participantData ? participantData.phone : "",
   });
 
-  const [activityList, setActivities] = useState([]);
-  const [events, setEvents] = useState([]);
+  const [activities, setActivities] = useState([]);
   const [rankList, setRankList] = useState([]);
-  const [pointValue, setPointValue] = useState("None");
   const [eventList, setEventList] = useState([
     {
       id: "",
@@ -50,8 +47,8 @@ const ParticipantPopup = ({
   useEffect(() => {
     try {
       const fetchEvents = async () => {
-        let events = await getEvents();
-        setEvents(events);
+        let activities = await getActivities();
+        setActivities(activities);
       };
       fetchEvents();
     } catch (error) {
@@ -60,36 +57,29 @@ const ParticipantPopup = ({
   }, []);
 
   const getData = (item) => {
-    let filteredEvent = events?.filter((event) => {
-      return event.id === item.eventId;
+    let filteredEvent = activities?.filter((event) => {
+      return event.id === item.activityId;
     });
     if (filteredEvent.length) {
-      let filteredActivity = activityList?.filter((activity) => {
-        return activity.id === filteredEvent[0]?.activityId.id;
+      let filteredPoints = filteredEvent?.filter((data) => {
+        return data.points === item.points;
       });
-      let filteredPoints = filteredActivity[0]?.ranks.filter((data) => {
-        return data.position === item.rank;
-      });
-
       let returnObj = {
-        name: filteredActivity.length ? filteredActivity[0].name : "uu",
-        rank: filteredPoints?.length ? filteredPoints[0].position : "",
-        activityId: filteredActivity.length ? filteredActivity[0].id : "",
+        name: filteredEvent.length ? filteredEvent[0].name : "uu",
+        activityId: filteredEvent.length ? filteredEvent[0].id : "",
         points: filteredPoints?.length ? filteredPoints[0].points : "None",
       };
 
-      setRankList(filteredActivity[0]?.ranks);
       return returnObj;
     }
   };
   useEffect(() => {
-    if (participationData) {
+    if (participationData.length) {
       let list = [];
       participationData.map((item) => {
         list.push({
-          id: item.eventId,
+          id: item.activityId,
           eventName: getData(item)?.name,
-          position: getData(item)?.rank,
           points: getData(item)?.points,
           activityId: getData(item)?.activityId,
           participationId: item.id,
@@ -102,39 +92,32 @@ const ParticipantPopup = ({
       if (updatedList.length) {
         setEventList(updatedList);
       }
+    } else {
+      setEventList([
+        {
+          id: "",
+          eventName: "",
+          position: "",
+          points: "None",
+          activityId: "",
+          participationId: "",
+        },
+      ]);
     }
   }, [participationData]);
 
   const onInputSelected = (index) => (e) => {
-    let filteredEvent = events?.filter((activity) => {
+    let filteredEvent = activities?.filter((activity) => {
       return activity.id === e.target.value;
     });
     let newArr = eventList.map((item, i) => {
       if (index == i) {
-        return { ...item, id: e.target.value, position: "", points: "None" };
+        return { ...item, id: e.target.value, points: filteredEvent[0].points };
       } else {
         return item;
       }
     });
-    setRankList(filteredEvent[0].activityId.ranks);
-    setEventList(newArr);
-  };
 
-  const onSelectRank = (index) => (e) => {
-    let filteredRank = rankList.filter((rank) => {
-      return e.target.value == rank.position;
-    });
-    let newArr = eventList.map((item, i) => {
-      if (index == i) {
-        return {
-          ...item,
-          position: e.target.value,
-          points: filteredRank.length ? filteredRank[0]?.points : "None",
-        };
-      } else {
-        return item;
-      }
-    });
     setEventList(newArr);
   };
 
@@ -186,13 +169,13 @@ const ParticipantPopup = ({
               event.participationId,
               participantData.id,
               event.id,
-              event.position
+              event.points
             );
           } else {
             let partcipationResp = await createParticipation(
               participantData.id,
               event.id,
-              event.position
+              event.points
             );
           }
         });
@@ -217,7 +200,7 @@ const ParticipantPopup = ({
           let partcipationResp = await createParticipation(
             response.id,
             event.id,
-            event.position
+            event.points
           );
         });
 
@@ -240,7 +223,6 @@ const ParticipantPopup = ({
     let newEvent = {
       id: "",
       eventName: "",
-      position: "",
       points: "None",
       activityId: "",
       participationId: "",
@@ -338,38 +320,18 @@ const ParticipantPopup = ({
                           required
                         >
                           <option value="">Select Event</option>
-                          {events.map((activity) => {
+                          {activities.map((activity) => {
                             return (
                               <option key={activity.id} value={activity.id}>
-                                {activity.activityId.name}
+                                {activity.name}
                               </option>
                             );
                           })}
                         </Form.Select>
                       </Form.Group>
-                      <Form.Group className="mb-3  col-md-4">
-                        <Form.Label className="text-primary d-flex font-weight-bold">
-                          Rank:
-                        </Form.Label>
 
-                        <Form.Select
-                          placeholder=" Event Name"
-                          name="eventname"
-                          value={event.position}
-                          onChange={onSelectRank(index)}
-                        >
-                          <option value="">Select a rank...</option>
-                          {rankList?.map((rank, index) => {
-                            return (
-                              <option key={index} value={rank.position}>
-                                {rank.position}
-                              </option>
-                            );
-                          })}
-                        </Form.Select>
-                      </Form.Group>
                       <Form.Group
-                        className="mb-3  col-md-1"
+                        className="mb-3  col-md-3"
                         controlId="formBasicName"
                       >
                         <Form.Label className="text-primary d-flex font-weight-bold">

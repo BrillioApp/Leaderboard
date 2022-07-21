@@ -62,7 +62,7 @@ const Leaderboard = () => {
                           </tr>
                         </thead>
                         <tbody>
-                          {partcipant.event.map((event, eventIndex) => {
+                          {partcipant.activity.map((event, eventIndex) => {
                             return (
                               <tr key={eventIndex}>
                                 <td>{eventIndex + 1}</td>
