@@ -111,3 +111,8 @@
   height: calc(100vh - 10px);
   overflow-x: hidden;
 }
+.react-datepicker__input-container input {
+      padding: 6px 5px;
+      border: 1px solid #ced4da;
+      border-radius: 0.25rem;
+}

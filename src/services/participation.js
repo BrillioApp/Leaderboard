@@ -105,14 +105,14 @@ export const removeParticipant = async (id) => {
 
 // create partcipation
 
-export const createParticipation = async (participantId, eventId, points) => {
+export const createParticipation = async (participantId, eventId, points,date,description) => {
   let pointsval = parseInt(points);
 
   return client
     .mutate({
       mutation: gql`
   mutation{
-    createParticipation(participantId:"${participantId}",activityId:"${eventId}",points:${pointsval}){
+    createParticipation(participantId:"${participantId}",activityId:"${eventId}",points:${pointsval},participationDate:"${date}",participationDescription:"${description}"){
       id
       }
     }
@@ -133,6 +133,8 @@ export const getPartcipationsList = (username, password) => {
             activityId
             participantId
             points
+            participationDate
+            participationDescription
           }
         }
       `,
@@ -161,13 +163,13 @@ export const getPartcipation = (partcipantId) => {
     });
 };
 
-export const updateParticipationList = (id, participantId, eventId, points) => {
+export const updateParticipationList = (id, participantId, eventId, points,date,description) => {
   let pointVal = parseInt(points);
   return client
     .mutate({
       mutation: gql`
   mutation{
-    updateParticipation(id:"${id}",participantId:"${participantId}",activityId:"${eventId}",points:${pointVal}){
+    updateParticipation(id:"${id}",participantId:"${participantId}",activityId:"${eventId}",points:${pointVal},participationDate:"${date}",participationDescription:"${description}"){
         id,
       
       }
@@ -206,6 +208,8 @@ export const getParticipantPoints = async () => {
           activity {
             points
             activityName
+            participationDate
+            participationDescription
             __typename
           }
           __typename

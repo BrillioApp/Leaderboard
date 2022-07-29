@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Modal, Button } from "react-bootstrap";
 import Form from "react-bootstrap/Form";
 import Swal from "sweetalert2";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import {
   createPartcipant,
   updatePartcipant,
@@ -30,7 +32,7 @@ const ParticipantPopup = ({
     email: participantData ? participantData.email : "",
     phone: participantData ? participantData.phone : "",
   });
-
+  const [startDate, setStartDate] = useState(new Date());
   const [activities, setActivities] = useState([]);
   const [rankList, setRankList] = useState([]);
   const [eventList, setEventList] = useState([
@@ -41,6 +43,8 @@ const ParticipantPopup = ({
       points: "None",
       activityId: "",
       participationId: "",
+      startDate: new Date(),
+      description: "",
     },
   ]);
 
@@ -83,6 +87,12 @@ const ParticipantPopup = ({
           points: getData(item)?.points,
           activityId: getData(item)?.activityId,
           participationId: item.id,
+          startDate: item.participationDate
+            ? new Date(item.participationDate)
+            : new Date(),
+          description: item.participationDescription
+            ? item.participationDescription
+            : "",
         });
         return list;
       });
@@ -101,6 +111,8 @@ const ParticipantPopup = ({
           points: "None",
           activityId: "",
           participationId: "",
+          startDate: new Date(),
+          description: "",
         },
       ]);
     }
@@ -113,6 +125,29 @@ const ParticipantPopup = ({
     let newArr = eventList.map((item, i) => {
       if (index == i) {
         return { ...item, id: e.target.value, points: filteredEvent[0].points };
+      } else {
+        return item;
+      }
+    });
+
+    setEventList(newArr);
+  };
+
+  const setEventDate = (date, index) => {
+    let newArr = eventList.map((item, i) => {
+      if (index == i) {
+        return { ...item, startDate: date };
+      } else {
+        return item;
+      }
+    });
+    setEventList(newArr);
+  };
+
+  const onDecriptionChange = (index) => (e) => {
+    let newArr = eventList.map((item, i) => {
+      if (index == i) {
+        return { ...item, description: e.target.value };
       } else {
         return item;
       }
@@ -169,13 +204,17 @@ const ParticipantPopup = ({
               event.participationId,
               participantData.id,
               event.id,
-              event.points
+              event.points,
+              event.startDate,
+              event.description
             );
           } else {
             let partcipationResp = await createParticipation(
               participantData.id,
               event.id,
-              event.points
+              event.points,
+              event.startDate,
+              event.description
             );
           }
         });
@@ -200,7 +239,9 @@ const ParticipantPopup = ({
           let partcipationResp = await createParticipation(
             response.id,
             event.id,
-            event.points
+            event.points,
+            event.startDate,
+            event.description
           );
         });
 
@@ -226,6 +267,8 @@ const ParticipantPopup = ({
       points: "None",
       activityId: "",
       participationId: "",
+      description: "",
+      startDate: new Date(),
     };
     setEventList([...eventList, newEvent]);
   };
@@ -304,12 +347,15 @@ const ParticipantPopup = ({
                 />
               </Form.Group>
               <div className="row">
+                <div className="col-md-12">
+                  <h6>Activity Details:</h6>
+                </div>
                 {eventList?.map((event, index) => {
                   return (
                     <React.Fragment key={index}>
-                      <Form.Group className="mb-3  col-md-5">
+                      <Form.Group className="mb-3  col-md-6">
                         <Form.Label className="text-primary d-flex font-weight-bold">
-                          Event Name:
+                          Name:
                         </Form.Label>
 
                         <Form.Select
@@ -329,9 +375,32 @@ const ParticipantPopup = ({
                           })}
                         </Form.Select>
                       </Form.Group>
+                      <Form.Group className="mb-3  col-md-6">
+                        <Form.Label className="text-primary d-flex font-weight-bold">
+                          Date:
+                        </Form.Label>
 
+                        <DatePicker
+                          selected={event.startDate}
+                          onChange={(date) => setEventDate(date, index)}
+                        />
+                      </Form.Group>
+
+                      <Form.Group className="mb-3  col-md-8">
+                        <Form.Label className="text-primary d-flex font-weight-bold">
+                          Description:
+                        </Form.Label>
+                        <Form.Control
+                          as="textarea"
+                          rows={1}
+                          type="text"
+                          value={event.description}
+                          onChange={onDecriptionChange(index)}
+                          placeholder=" description"
+                        />
+                      </Form.Group>
                       <Form.Group
-                        className="mb-3  col-md-3"
+                        className="mb-3  col-md-2"
                         controlId="formBasicName"
                       >
                         <Form.Label className="text-primary d-flex font-weight-bold">
@@ -367,6 +436,7 @@ const ParticipantPopup = ({
                   className="btn btn-warning"
                   onClick={addMoreEvents}
                   type="button"
+                  style={{ marginBottom: "8px", marginTop: "8px" }}
                 >
                   Add More Events
                 </button>

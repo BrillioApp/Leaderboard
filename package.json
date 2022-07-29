@@ -2,9 +2,6 @@
   "name": "sensors",
   "version": "0.1.0",
   "private": true,
-  "engines": {
-    "node": "<=16.0.0"
-  },
   "dependencies": {
     "@apollo/client": "^3.5.9",
     "@fortawesome/fontawesome-free": "^6.1.1",
@@ -15,9 +12,11 @@
     "bootstrap-icons": "^1.8.3",
     "graphql": "^16.3.0",
     "mdbreact": "^5.2.0",
+    "moment": "^2.29.4",
     "react": "^17.0.2",
     "react-bootstrap": "^2.1.2",
     "react-confirm-alert": "^2.8.0",
+    "react-datepicker": "^4.8.0",
     "react-dom": "^17.0.2",
     "react-favicon": "0.0.26",
     "react-redux": "^7.2.6",

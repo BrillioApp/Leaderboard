@@ -3,6 +3,7 @@ import { Table } from "react-bootstrap";
 import Card from "react-bootstrap/Card";
 import Accordion from "react-bootstrap/Accordion";
 import Spinner from "react-bootstrap/Spinner";
+import moment from "moment"
 import { getParticipantPoints } from "services/participation";
 
 const Leaderboard = () => {
@@ -56,8 +57,9 @@ const Leaderboard = () => {
                       <Table striped borderless hover variant="dark">
                         <thead>
                           <tr>
-                            <th>#</th>
-                            <th>Event Name</th>
+                            <th>Date</th>
+                            <th>Activity Name</th>
+                            <th>Description</th>
                             <th>Points</th>
                           </tr>
                         </thead>
@@ -65,8 +67,10 @@ const Leaderboard = () => {
                           {partcipant.activity.map((event, eventIndex) => {
                             return (
                               <tr key={eventIndex}>
-                                <td>{eventIndex + 1}</td>
+                                <td>
+                                {event.participationDate ? moment(new Date(event.participationDate)).format("DD/MM/YYYY") : "None"}</td>
                                 <td>{event.activityName}</td>
+                                <td>{event.participationDescription ? event.participationDescription : "None"}</td>
                                 <td>{event.points}</td>
                               </tr>
                             );
