@@ -12,7 +12,7 @@ const Header = ({ isLoggedIn, logout }) => {
     <div>
       <div className="center-div">
         {/* <img src={logo} height={250} width={400} alt="" className="logo-img" /> */}
-        {location.pathname !== "/login" ? (
+        {location.pathname !== "/login" && isLoggedIn ? (
           <div
             className="btn btn-danger"
             style={{
@@ -26,7 +26,7 @@ const Header = ({ isLoggedIn, logout }) => {
             }}
             onClick={isLoggedIn ? logout : handleLogin}
           >
-            {isLoggedIn ? "Logout" : "Login"}
+            {"Logout"}
           </div>
         ) : (
           <></>

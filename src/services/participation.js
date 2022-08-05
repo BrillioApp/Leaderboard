@@ -10,8 +10,8 @@ export const getParticipantList = async () => {
             id
             firstname
             lastname
+            departmentId
             employeeId
-            department
             designation
             email
             phone
@@ -27,9 +27,9 @@ export const getParticipantList = async () => {
 export const createPartcipant = async (
   firstname,
   lastname,
+  departmentId,
   employeeId,
   designation,
-  departmentValue,
   email,
   phone
 ) => {
@@ -37,13 +37,13 @@ export const createPartcipant = async (
     .mutate({
       mutation: gql`
   mutation{
-    createParticipant(firstname:"${firstname}",lastname:"${lastname}",employeeId:"${employeeId}",department:"${departmentValue}",designation:"${designation}",email:"${email}",phone:"${phone}"){
+    createParticipant(firstname:"${firstname}",lastname:"${lastname}", departmentId:"${departmentId}", employeeId:"${employeeId}",designation:"${designation}",email:"${email}",phone:"${phone}"){
         id,
         firstname,
         lastname,
+        departmentId,
         employeeId,
         designation,
-        department,
         email,
         phone
       }
@@ -59,9 +59,9 @@ export const updatePartcipant = async (
   id,
   firstname,
   lastname,
+  departmentId,
   employeeId,
   designation,
-  departmentValue,
   email,
   phone
 ) => {
@@ -69,13 +69,13 @@ export const updatePartcipant = async (
     .mutate({
       mutation: gql`
   mutation{
-    updateParticipant(id:"${id}",firstname:"${firstname}",lastname:"${lastname}",employeeId:"${employeeId}",department:"${departmentValue}",designation:"${designation}",email:"${email}",phone:"${phone}"){
+    updateParticipant(id:"${id}",firstname:"${firstname}",lastname:"${lastname}",employeeId:"${employeeId}",designation:"${designation}",email:"${email}",phone:"${phone}",departmentId:"${departmentId}"){
         id,
         firstname,
         lastname,
+        departmentId,
         employeeId,
         designation,
-        department,
         email,
         phone
       }
@@ -105,7 +105,13 @@ export const removeParticipant = async (id) => {
 
 // create partcipation
 
-export const createParticipation = async (participantId, eventId, points,date,description) => {
+export const createParticipation = async (
+  participantId,
+  eventId,
+  points,
+  date,
+  description
+) => {
   let pointsval = parseInt(points);
 
   return client
@@ -163,7 +169,14 @@ export const getPartcipation = (partcipantId) => {
     });
 };
 
-export const updateParticipationList = (id, participantId, eventId, points,date,description) => {
+export const updateParticipationList = (
+  id,
+  participantId,
+  eventId,
+  points,
+  date,
+  description
+) => {
   let pointVal = parseInt(points);
   return client
     .mutate({
@@ -205,6 +218,7 @@ export const getParticipantPoints = async () => {
         getPoints {
           name
           totalPoints
+          departmentId
           activity {
             points
             activityName
@@ -220,4 +234,21 @@ export const getParticipantPoints = async () => {
   // console.log(`Events:`);
   // console.log(res.data.getEvents);
   return res.data.getPoints;
+};
+
+export const getAllDepartments = async () => {
+  // console.log(`Fetching events`);
+  const res = await client.query({
+    query: gql`
+      query {
+        getDepartments {
+          id
+          name
+        }
+      }
+    `,
+  });
+  // console.log(`Events:`);
+  // console.log(res.data.getEvents);
+  return res.data.getDepartments;
 };

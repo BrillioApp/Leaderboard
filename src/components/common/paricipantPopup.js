@@ -22,19 +22,20 @@ const ParticipantPopup = ({
   resetState,
   participationData,
   setParticipationList,
+  departmentList,
 }) => {
   const [participantdetails, setParticipant] = useState({
     firstname: participantData ? participantData.firstname : "",
     lastname: participantData ? participantData.lastname : "",
+    departmentId: participantData ? participantData.departmentId : "",
     designation: participantData ? participantData.designation : "",
     department: participantData ? participantData.department : "",
     employeeId: participantData ? participantData.employeeId : "",
     email: participantData ? participantData.email : "",
     phone: participantData ? participantData.phone : "",
   });
-  const [startDate, setStartDate] = useState(new Date());
+
   const [activities, setActivities] = useState([]);
-  const [rankList, setRankList] = useState([]);
   const [eventList, setEventList] = useState([
     {
       id: "",
@@ -47,6 +48,11 @@ const ParticipantPopup = ({
       description: "",
     },
   ]);
+
+  // const onDepartmentChange = (e) => {
+  //   setParticipant({ ...participantdetails, departmentId: e.target.value });
+  //   console.log(e.target.value, "e.target.value");
+  // };
 
   useEffect(() => {
     try {
@@ -161,9 +167,9 @@ const ParticipantPopup = ({
       ...prevState,
       firstname: participantData ? participantData.firstname : "",
       lastname: participantData ? participantData.lastname : "",
+      departmentId: participantData ? participantData.departmentId : "",
       designation: participantData ? participantData.designation : "",
       employeeId: participantData ? participantData.employeeId : "",
-      department: participantData ? participantData.department : "",
       email: participantData ? participantData.email : "",
       phone: participantData ? participantData.phone : "",
     }));
@@ -172,7 +178,7 @@ const ParticipantPopup = ({
   let {
     firstname,
     lastname,
-    department,
+    departmentId,
     designation,
     employeeId,
     email,
@@ -186,74 +192,82 @@ const ParticipantPopup = ({
   };
 
   const submitButton = async () => {
+    let eventIndex = eventList.findIndex((value) => value.id === "");
     try {
       if (participantData) {
-        let response = await updatePartcipant(
-          participantData.id,
-          firstname,
-          lastname,
-          employeeId,
-          designation,
-          department,
-          email,
-          phone
-        );
-        eventList.forEach(async (event) => {
-          if (event.participationId != "") {
-            let partcipationResp = await updateParticipationList(
-              event.participationId,
-              participantData.id,
-              event.id,
-              event.points,
-              event.startDate,
-              event.description
-            );
-          } else {
-            let partcipationResp = await createParticipation(
-              participantData.id,
-              event.id,
-              event.points,
-              event.startDate,
-              event.description
-            );
-          }
-        });
-        Swal.fire({
-          text: "Participant has been updated.",
-          icon: "success",
-          timer: "2000",
-          showConfirmButton: false,
-        });
-        resetState(response, "update");
-      } else {
-        let response = await createPartcipant(
-          firstname,
-          lastname,
-          employeeId,
-          designation,
-          department,
-          email,
-          phone
-        );
-        eventList.forEach(async (event) => {
-          let partcipationResp = await createParticipation(
-            response.id,
-            event.id,
-            event.points,
-            event.startDate,
-            event.description
+        if (eventIndex < 0) {
+          let response = await updatePartcipant(
+            participantData.id,
+            firstname,
+            lastname,
+            departmentId,
+            employeeId,
+            designation,
+            email,
+            phone
           );
-        });
+          eventList.forEach(async (event) => {
+            if (event.participationId != "") {
+              let partcipationResp = await updateParticipationList(
+                event.participationId,
+                participantData.id,
+                event.id,
+                event.points,
+                event.startDate,
+                event.description
+              );
+            } else {
+              let partcipationResp = await createParticipation(
+                participantData.id,
+                event.id,
+                event.points,
+                event.startDate,
+                event.description
+              );
+            }
+          });
+          Swal.fire({
+            text: "Participant has been updated.",
+            icon: "success",
+            timer: "2000",
+            showConfirmButton: false,
+          });
+          resetState(response, "update");
+          handleClose();
+        }
+      } else {
+        if (eventIndex < 0) {
+          let response = await createPartcipant(
+            firstname,
+            lastname,
+            departmentId,
+            employeeId,
+            designation,
+            email,
+            phone
+          );
+          eventList.forEach(async (event) => {
+            if (event.id && event.id !== "") {
+              let partcipationResp = await createParticipation(
+                response.id,
+                event.id,
+                event.points,
+                event.startDate,
+                event.description
+              );
+            }
+          });
 
-        Swal.fire({
-          text: "Participant has been created.",
-          icon: "success",
-          timer: "2000",
-          showConfirmButton: false,
-        });
-        resetState(response, "create");
+          Swal.fire({
+            text: "Participant has been created.",
+            icon: "success",
+            timer: "2000",
+            showConfirmButton: false,
+          });
+          resetState(response, "create");
+          handleClose();
+        }
       }
-      handleClose();
     } catch (e) {
       console.log(e);
       // handleClose();
@@ -332,20 +346,29 @@ const ParticipantPopup = ({
                   required
                 />
               </Form.Group>
-              <Form.Group className="mb-3  col-md-12" controlId="formBasicName">
-                <Form.Label className="text-primary d-flex font-weight-bold">
-                  Department:
+              <Form.Group className="mb-3  col-md-12">
+                <Form.Label className="text-primary d-flex font-weight-bold required-field">
+                  CoE:
                 </Form.Label>
 
-                <Form.Control
-                  type="text"
-                  placeholder=" Department"
-                  name="department"
-                  value={department}
+                <Form.Select
+                  placeholder=" CoE"
+                  name="departmentId"
+                  value={departmentId}
                   onChange={userchangeHandler}
                   required
-                />
+                >
+                  <option value="">Select CoE</option>
+                  {departmentList.map((department) => {
+                    return (
+                      <option key={department.id} value={department.id}>
+                        {department.name}
+                      </option>
+                    );
+                  })}
+                </Form.Select>
               </Form.Group>
+
               <div className="row">
                 <div className="col-md-12">
                   <h6>Activity Details:</h6>
@@ -354,7 +377,7 @@ const ParticipantPopup = ({
                   return (
                     <React.Fragment key={index}>
                       <Form.Group className="mb-3  col-md-6">
-                        <Form.Label className="text-primary d-flex font-weight-bold">
+                        <Form.Label className="text-primary d-flex font-weight-bold required-field">
                           Name:
                         </Form.Label>
 
@@ -417,16 +440,22 @@ const ParticipantPopup = ({
                           {event.points}
                         </div>
                       </Form.Group>
-
-                      <div className="col-md-2" style={{ paddingLeft: "40px" }}>
-                        <span
-                          className="btn btn-danger"
-                          onClick={() => removeParticipation(index)}
-                          style={{ marginTop: "30px" }}
+                      {index !== 0 ? (
+                        <div
+                          className="col-md-2"
+                          style={{ paddingLeft: "40px" }}
                         >
-                          <img src={trashIcon} />
-                        </span>
-                      </div>
+                          <span
+                            className="btn btn-danger"
+                            onClick={() => removeParticipation(index)}
+                            style={{ marginTop: "30px" }}
+                          >
+                            <img src={trashIcon} />
+                          </span>
+                        </div>
+                      ) : (
+                        <span></span>
+                      )}
                     </React.Fragment>
                   );
                 })}

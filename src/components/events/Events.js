@@ -7,6 +7,7 @@ import { getActivities, deleteActivity } from "services/activity";
 import { Popup } from "components/common/popUp/Popup";
 import editIcon from "assets/images/edit_icon.svg";
 import trashIcon from "assets/images/trash_icon.svg";
+import ShowMore from "components/common/button/ShowMore";
 
 export const Events = () => {
   const [events, setEvents] = useState([]);
@@ -162,18 +163,18 @@ export const Events = () => {
                   })}
                 </tbody>
               </Table>
-              <div className="row" style={{ marginTop: "10px" }}>
-                <div className="col-md-12  mb-3">
-                  <button
-                    className="btn btn-outline-primary mx-2"
-                    onClick={() => toggleShowModal("Add")}
-                  >
-                    Add Activity
-                  </button>
-                </div>
-              </div>
             </>
           )}
+          <div style={{ marginTop: "10px" }}>
+            <div className="col-md-12  mb-3">
+              <button
+                className="btn btn-outline-primary mx-2"
+                onClick={() => toggleShowModal("Add")}
+              >
+                Add Activity
+              </button>
+            </div>
+          </div>
         </Card>
       </div>
       <Popup

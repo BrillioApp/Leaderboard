@@ -7,6 +7,7 @@ import {
   getParticipantList,
   removeParticipant,
   getPartcipationsList,
+  getAllDepartments,
 } from "../../services/participation";
 import ParticipantPopup from "../common/paricipantPopup";
 import editICon from "assets/images/edit_icon.svg";
@@ -18,6 +19,7 @@ export const ParticipantList = () => {
   const [participantInfo, setData] = useState(undefined);
   const [participationData, setParticipationData] = useState([]);
   const [showLoader, setLoader] = useState(false);
+  const [allDepartments, setDepartments] = useState([]);
   const handleClose = async () => {
     setShow(false);
   };
@@ -73,6 +75,8 @@ export const ParticipantList = () => {
       let partcipantData = await getParticipantList();
       let allParticipants = [...partcipantData];
       setParticipant(allParticipants);
+      let departments = await getAllDepartments();
+      setDepartments(departments);
       setLoader(false);
     } catch (e) {
       console.log(e);
@@ -114,6 +118,13 @@ export const ParticipantList = () => {
       });
   };
 
+  const getDepartmentName = (id) => {
+    let filteredArr = allDepartments.filter((department) => {
+      return department.id === id;
+    });
+    return filteredArr;
+  };
+
   return (
     <div className="login-bg">
       <Card className="card card-pos col-xs-12 col-sm-12 col-md-8 col-lg-8 my-3">
@@ -129,7 +140,7 @@ export const ParticipantList = () => {
                   <th>#</th>
                   <th>Username</th>
                   <th>Employee Id</th>
-                  <th>Department</th>
+                  <th>CoE</th>
                   <th>Action</th>
                 </tr>
               </thead>
@@ -142,7 +153,9 @@ export const ParticipantList = () => {
                         {participant.firstname + " " + participant.lastname}
                       </td>
                       <td>{participant.employeeId}</td>
-                      <td>{participant.department}</td>
+                      <td>
+                        {getDepartmentName(participant.departmentId)[0].name}
+                      </td>
                       <td>
                         <div
                           style={{
@@ -166,13 +179,20 @@ export const ParticipantList = () => {
                 })}
               </tbody>
             </Table>
-            <button
-              className="btn btn-outline-primary mx-2"
-              onClick={handleShow}
-              style={{ marginTop: "10px" }}
+
+            <div
+              style={{
+                marginTop: "10px",
+                textAlign: "center",
+              }}
             >
-              Add Participant
-            </button>
+              <button
+                className="btn btn-outline-primary mx-2 col-md-2"
+                onClick={handleShow}
+              >
+                Add Participant
+              </button>
+            </div>
           </>
         )}
       </Card>
@@ -183,6 +203,7 @@ export const ParticipantList = () => {
         resetState={resetState}
         participationData={participationData}
         setParticipationList={setParticipationList}
+        departmentList={allDepartments}
       />
     </div>
   );
