@@ -1,7 +1,7 @@
 import { ApolloClient, InMemoryCache } from "@apollo/client";
 
 export const client = new ApolloClient({
-  uri: "http://localhost:4002/graphql",
+  uri: "https://leaderboardxot.herokuapp.com/graphql",
   fetchOptions: {
     mode: "cors",
   },
