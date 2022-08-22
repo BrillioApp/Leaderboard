@@ -3,5 +3,5 @@
 } */
 .login-bg {
   background-color: #1a003b;
-  height: calc(100vh - 10px);
+  /* height: calc(100vh - 10px); */
 }

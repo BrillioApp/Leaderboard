@@ -33,7 +33,8 @@ const Login = ({ isLoggedIn, setIsLoggedIn }) => {
     if (userData) {
       setFlag(false);
       setIsLoggedIn(userData.username);
-      localStorage.setItem("userId", userData.username);
+      localStorage.setItem("username", userData.username);
+      localStorage.setItem("userId", userData.id);
       localStorage.setItem("isAdmin", adminData.isAdmin);
     } else {
       setFlag(true);

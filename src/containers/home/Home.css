@@ -3,6 +3,10 @@
   background-color: rgb(32, 29, 29);
 }
 
+body {
+  background-color: #1a003b;
+}
+
 .App-logo {
   height: 40vmin;
   pointer-events: none;
@@ -108,8 +112,12 @@
 }
 .login-bg {
   background-color: #1a003b;
-  height: calc(100vh - 10px);
-  overflow-x: hidden;
+  /* height: calc(100vh - 10px);
+  overflow-x: hidden; */
+}
+.login-bg .tab-content {
+  padding: 10px;
+  background-color: #fde6ff;
 }
 .react-datepicker__input-container input {
   padding: 6px 5px;
@@ -119,8 +127,8 @@
 /* tabs  leaderboard*/
 .leaderboard .nav-tabs .nav-link.active {
   background-color: #fde6ff;
-  border-color: #fde6ff #fde6ff #0b002a #fde6ff;
-  color: #0dcaf0;
+  color: #000;
+  font-weight: bold;
 }
 .leaderboard .nav-tabs .nav-link {
   background-color: transparent;
@@ -145,7 +153,16 @@
 }
 
 .leaderboard .nav-tabs {
-  border-bottom: 1px solid #0b002a;
+  /* border-bottom: 1px solid #0b002a; */
+  margin-bottom: 0px !important;
+}
+
+.leaderboard .accordion-item, 
+.leaderboard .accordion-item .accordion-header, 
+.leaderboard .accordion-item button, 
+.leaderboard .accordion-item button:focus,
+div:focus, input:focus {
+  outline: none !important;
 }
 
 @media (min-width: 480px) {

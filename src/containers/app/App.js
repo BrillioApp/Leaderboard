@@ -23,6 +23,7 @@ const App = () => {
   const logout = () => {
     if (localStorage.getItem("userId")) {
       localStorage.removeItem("userId");
+      localStorage.removeItem("username");
       setIsLoggedIn("");
     }
   };
@@ -33,6 +34,7 @@ const App = () => {
       <Switch>
         <ApolloProvider client={client}>
           <Route exact path="/" component={() => <Home table="home" />} />
+          <Route exact path="/xt" component={() => <Home table="home" />} />
           <Route
             exact
             path="/login"

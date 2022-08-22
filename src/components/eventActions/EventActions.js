@@ -2,9 +2,11 @@ import React, { useEffect, useState } from "react";
 import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
 import { Button } from "react-bootstrap";
+import moment from "moment";
 import { addEvent, updateEvent } from "services/Event";
 import { updateActivity, createActivity } from "services/activity";
 import trashIcon from "assets/images/trash_icon.svg";
+import {creatLog} from "services/LogData"
 
 export const EventActions = ({ action, data, toggleShowModal, updateTab }) => {
   const [eventData, setEventData] = useState(data);
@@ -17,9 +19,24 @@ export const EventActions = ({ action, data, toggleShowModal, updateTab }) => {
   const onActionTriggered = async (action) => {
     try {
       let actionResponse;
-      if (action === "Add") actionResponse = await createActivity(eventData);
-      else if (action === "Update")
+      if (action === "Add") {
+        actionResponse = await createActivity(eventData);
+        let date = moment(new Date()).format("MMM DD, yyyy | HH:mm A")
+        let userId = localStorage.getItem("userId");
+        let username = localStorage.getItem("username");
+        let description = `The ${eventData.name} activity has been created by ${username}`
+        let logResponse = creatLog(date,userId,description)
+      }
+       
+      else if (action === "Update"){
         actionResponse = await updateActivity(eventData);
+        let date = moment(new Date()).format("MMM DD, yyyy | HH:mm A")
+        let userId = localStorage.getItem("userId");
+        let username = localStorage.getItem("username");
+        let description = `The ${eventData.name} activity has been updated by ${username}`
+        let logResponse = creatLog(date,userId,description)
+      }
+        
       // else actionResponse = await createActivity(newActivity);
 
       updateTab(action, actionResponse);

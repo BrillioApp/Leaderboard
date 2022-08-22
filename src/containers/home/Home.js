@@ -118,7 +118,7 @@ const Home = ({ newData, event, user, setUser, table }) => {
         </div>
       )}
 
-      {location.pathname === "/" ? (
+      {location.pathname === "/" || location.pathname === "/xt"? (
         <Leaderboard />
       ) : location.pathname === "/participantdetails" ? (
         <ParticipantList />

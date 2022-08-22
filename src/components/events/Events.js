@@ -3,11 +3,13 @@ import { Table } from "react-bootstrap";
 import Card from "react-bootstrap/Card";
 import Swal from "sweetalert2";
 import Spinner from "react-bootstrap/Spinner";
+import moment from "moment";
 import { getActivities, deleteActivity } from "services/activity";
 import { Popup } from "components/common/popUp/Popup";
 import editIcon from "assets/images/edit_icon.svg";
 import trashIcon from "assets/images/trash_icon.svg";
 import ShowMore from "components/common/button/ShowMore";
+import {creatLog} from "services/LogData"
 
 export const Events = () => {
   const [events, setEvents] = useState([]);
@@ -71,6 +73,11 @@ export const Events = () => {
           try {
             let actionResponse = await deleteActivity(eventData);
             setEvents(events.filter((event) => event.id !== eventData.id));
+            let date = moment(new Date()).format("MMM DD, yyyy | HH:mm A")
+            let userId = localStorage.getItem("userId");
+            let username = localStorage.getItem("username");
+            let description = `The ${eventData.name} activity has deleted by ${username}`
+            let logResponse = creatLog(date,userId,description)
             swalWithBootstrapButtons.fire({
               title: "Deleted!",
               text: "Event has been deleted.",
@@ -83,12 +90,7 @@ export const Events = () => {
           }
         }
       });
-    try {
-      let actionResponse = await deleteActivity(eventData);
-      // updateTab(action, actionResponse);
-    } catch (error) {
-      console.log(error);
-    }
+   
   };
 
   useEffect(() => {
@@ -116,6 +118,16 @@ export const Events = () => {
             </Spinner>
           ) : (
             <>
+             <div style={{ marginBottom: "10px",textAlign:"right",marginRight:"-5px" }}>
+            <div className="col-md-12  mb-3">
+              <button
+                className="btn btn-outline-primary mx-2"
+                onClick={() => toggleShowModal("Add")}
+              >
+                Add Activity
+              </button>
+            </div>
+          </div>
               <Table striped borderless hover variant="dark">
                 <thead>
                   <tr>
@@ -165,16 +177,7 @@ export const Events = () => {
               </Table>
             </>
           )}
-          <div style={{ marginTop: "10px" }}>
-            <div className="col-md-12  mb-3">
-              <button
-                className="btn btn-outline-primary mx-2"
-                onClick={() => toggleShowModal("Add")}
-              >
-                Add Activity
-              </button>
-            </div>
-          </div>
+         
         </Card>
       </div>
       <Popup

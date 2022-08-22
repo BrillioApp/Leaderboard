@@ -2,7 +2,11 @@ import React, { useState, useEffect } from "react";
 import { Table } from "react-bootstrap";
 import Card from "react-bootstrap/Card";
 import Swal from "sweetalert2";
+import Form from "react-bootstrap/Form";
+import InputGroup from 'react-bootstrap/InputGroup';
+import Button from 'react-bootstrap/Button';
 import Spinner from "react-bootstrap/Spinner";
+import moment from "moment";
 import {
   getParticipantList,
   removeParticipant,
@@ -12,6 +16,7 @@ import {
 import ParticipantPopup from "../common/paricipantPopup";
 import editICon from "assets/images/edit_icon.svg";
 import trashIcon from "assets/images/trash_icon.svg";
+import {creatLog} from "services/LogData"
 
 export const ParticipantList = () => {
   const [participants, setParticipant] = useState([]);
@@ -20,6 +25,7 @@ export const ParticipantList = () => {
   const [participationData, setParticipationData] = useState([]);
   const [showLoader, setLoader] = useState(false);
   const [allDepartments, setDepartments] = useState([]);
+  const [searchValue, setSearch] = useState("");
   const handleClose = async () => {
     setShow(false);
   };
@@ -83,8 +89,18 @@ export const ParticipantList = () => {
       setLoader(false);
     }
   }, []);
-
-  useEffect(async () => {}, []);
+      
+   const filteredParticipants = participants.filter( ({firstname,lastname,employeeId}) => {
+      return   (firstname.toLowerCase().includes(searchValue.toLowerCase()) ||
+      lastname.toLowerCase().includes(searchValue.toLowerCase()) ||
+      employeeId.toLowerCase().includes(searchValue.toLowerCase()))
+     }
+     
+    )
+  useEffect(async () => {
+ 
+   
+  }, [searchValue]);
 
   const removeData = (data) => {
     swalWithBootstrapButtons
@@ -111,6 +127,11 @@ export const ParticipantList = () => {
               timer: "2000",
               showConfirmButton: false,
             });
+            let date = moment(new Date()).format("MMM DD, yyyy | HH:mm A")
+            let userId = localStorage.getItem("userId");
+            let username = localStorage.getItem("username");
+            let description = `Participant ${data.firstname} ${data.lastname} has been deleted by ${username}`
+            let logResponse = creatLog(date,userId,description)
           } catch (e) {
             console.log(e);
           }
@@ -125,6 +146,12 @@ export const ParticipantList = () => {
     return filteredArr;
   };
 
+  const onSearchText = (e) => {
+    setSearch(e.target.value)
+
+  }
+
+
   return (
     <div className="login-bg">
       <Card className="card card-pos col-xs-12 col-sm-12 col-md-8 col-lg-8 my-3">
@@ -134,6 +161,37 @@ export const ParticipantList = () => {
           </Spinner>
         ) : (
           <>
+             <div 
+             className="row"
+              style={{
+                marginBottom: "10px",
+               
+              }}
+            >
+            <div className="col-md-9">
+             <Form.Group className="mb-3">
+               <Form.Control
+                  type="text"
+                  placeholder=" Type a keyword to search..."
+                  name="searchText"
+                  value={searchValue}
+                  onChange={onSearchText}
+                  required
+                />
+           
+            </Form.Group>
+             
+            </div>
+            <div className="col-md-3">
+              <button
+                className="btn btn-outline-primary"
+                onClick={handleShow}
+                style={{float:"right"}}
+              >
+                Add Participant
+              </button>
+              </div>
+            </div>
             <Table striped borderless hover variant="dark">
               <thead>
                 <tr>
@@ -145,7 +203,7 @@ export const ParticipantList = () => {
                 </tr>
               </thead>
               <tbody>
-                {participants.map((participant, index) => {
+                {filteredParticipants.map((participant, index) => {
                   return (
                     <tr key={index}>
                       <td>{index + 1}</td>
@@ -180,19 +238,7 @@ export const ParticipantList = () => {
               </tbody>
             </Table>
 
-            <div
-              style={{
-                marginTop: "10px",
-                textAlign: "center",
-              }}
-            >
-              <button
-                className="btn btn-outline-primary mx-2 col-md-2"
-                onClick={handleShow}
-              >
-                Add Participant
-              </button>
-            </div>
+         
           </>
         )}
       </Card>

@@ -3,6 +3,7 @@ import { Modal, Button } from "react-bootstrap";
 import Form from "react-bootstrap/Form";
 import Swal from "sweetalert2";
 import DatePicker from "react-datepicker";
+import moment from "moment";
 import "react-datepicker/dist/react-datepicker.css";
 import {
   createPartcipant,
@@ -13,6 +14,7 @@ import {
   getPartcipation,
 } from "services/participation";
 import { getActivities } from "services/activity";
+import { creatLog } from "services/LogData";
 import trashIcon from "assets/images/trash_icon.svg";
 
 const ParticipantPopup = ({
@@ -193,8 +195,13 @@ const ParticipantPopup = ({
 
   const submitButton = async () => {
     let eventIndex = eventList.findIndex((value) => value.id === "");
+    let date = moment(new Date()).format("MMM DD, yyyy | HH:mm A");
+    let userId = localStorage.getItem("userId");
+    let username = localStorage.getItem("username");
+    let description = "";
     try {
       if (participantData) {
+        description = `Participant ${firstname} ${lastname} details has been updated by ${username}`;
         if (eventIndex < 0) {
           let response = await updatePartcipant(
             participantData.id,
@@ -206,6 +213,7 @@ const ParticipantPopup = ({
             email,
             phone
           );
+          let logResponse = creatLog(date, userId, description);
           eventList.forEach(async (event) => {
             if (event.participationId != "") {
               let partcipationResp = await updateParticipationList(
@@ -236,6 +244,7 @@ const ParticipantPopup = ({
           handleClose();
         }
       } else {
+        description = `Participant ${firstname} ${lastname} details has been created by ${username}`;
         if (eventIndex < 0) {
           let response = await createPartcipant(
             firstname,
@@ -246,6 +255,7 @@ const ParticipantPopup = ({
             email,
             phone
           );
+          let logResponse = creatLog(date, userId, description);
           eventList.forEach(async (event) => {
             if (event.id && event.id !== "") {
               let partcipationResp = await createParticipation(
@@ -262,14 +272,20 @@ const ParticipantPopup = ({
             text: "Participant has been created.",
             icon: "success",
             timer: "2000",
-            showConfirmButton: false,
+            showConfirmButton: true,
           });
           resetState(response, "create");
           handleClose();
         }
       }
     } catch (e) {
-      console.log(e);
+      if (e.message.includes("duplicate key error")) {
+        Swal.fire({
+          text: "EmployeeId should be unique...",
+          icon: "error",
+          confirmButtonText: "Ok",
+        });
+      }
       // handleClose();
     }
   };
